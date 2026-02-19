@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Countdown Berbuka Puasa - Jawa Barat</title>
+
+<style>
+    body {
+        margin: 0;
+        font-family: 'Segoe UI', sans-serif;
+        background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        text-align: center;
+    }
+
+    .container {
+        background: rgba(255,255,255,0.1);
+        padding: 40px;
+        border-radius: 20px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 0 30px rgba(0,0,0,0.4);
+    }
+
+    h1 {
+        margin-bottom: 10px;
+        font-weight: 600;
+    }
+
+    .clock {
+        font-size: 48px;
+        font-weight: bold;
+        margin-top: 20px;
+        letter-spacing: 3px;
+    }
+
+    .info {
+        margin-top: 10px;
+        font-size: 14px;
+        opacity: 0.8;
+    }
+
+    .done {
+        font-size: 32px;
+        color: #FFD700;
+        margin-top: 20px;
+        animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+        0% { opacity: 1; }
+        50% { opacity: 0.5; }
+        100% { opacity: 1; }
+    }
+
+    .link {
+        margin-top: 20px;
+        a {
+            color: #FFD700;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>⏳ Hitung Mundur Berbuka Puasa</h1>
+    <h3>Wilayah Jawa Barat & Sekitarnya (WIB)</h3>
+    <div class="clock" id="countdown">00:00:00</div>
+    <div class="info">Perkiraan waktu berbuka: 18:13 WIB <br> By: Crystar </div>
+    <div class="Link"> <a href="Imsak.html">Waktu Imsak</a> </div>
+    <div id="message"></div>
+</div>
+
+<script>
+    function updateCountdown() {
+        const now = new Date();
+
+        // Set waktu buka (17:59 WIB hari ini)
+        const iftar = new Date();
+        iftar.setHours(18, 13, 0, 0);
+
+        // pas sudah lewat waktu buka hari ini, set ke besok
+        if (now > iftar) {
+            iftar.setDate(iftar.getDate() + 1);
+        }
+
+        const diff = iftar - now;
+
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+        const countdownEl = document.getElementById("countdown");
+        const messageEl = document.getElementById("message");
+
+        countdownEl.innerHTML = 
+            String(hours).padStart(2,'0') + ":" +
+            String(minutes).padStart(2,'0') + ":" +
+            String(seconds).padStart(2,'0');
+
+        if (diff <= 0) {
+            messageEl.innerHTML = "<div class='done'>🌙 Buka puasa woy!</div>";
+        } else {
+            messageEl.innerHTML = "";
+        }
+    }
+
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+</script>
+
+</body>
+</html>
