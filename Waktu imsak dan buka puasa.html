@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Countdown Imsak & Buka Puasa</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(-45deg, #0f2027, #203a43, #2c5364, #1c92d2);
+            background-size: 400% 400%;
+            animation: gradientMove 12s ease infinite;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            text-align: center;
+            animation: fadeIn 1.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            margin-bottom: 5px;
+            font-size: 32px;
+        }
+
+        h2 {
+            margin-top: 0;
+            font-weight: normal;
+            opacity: 0.8;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.12);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 15px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 0 25px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: scale(1.05);
+        }
+
+        .time {
+            font-size: 42px;
+            font-weight: bold;
+            margin-top: 10px;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 10px #ffffff,
+                             0 0 20px #8a8a8a,
+                             0 0 30px #3f3f3f;
+            }
+            to {
+                text-shadow: 0 0 20px #ffffff,
+                             0 0 30px #636363,
+                             0 0 40px #3a3a3a;
+            }
+        }
+
+        #status {
+            margin-top: 20px;
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        .credit {
+            margin-top: 10px;
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Ramadan 1446 H</h1>
+        <h2>Kab. Ciamis</h2>
+
+        <div class="card">
+            <h3>Hitung mundur Imsak</h3>
+            <div id="imsakCountdown" class="time">--:--:--</div>
+        </div>
+
+        <div class="card">
+            <h3>Hitung mundur Buka Puasa</h3>
+            <div id="bukaCountdown" class="time">--:--:--</div>
+        </div>
+
+        <div id="status"></div>
+        <div class="credit">By: Adrian Animasi (Crystar)</div>
+    </div>
+
+<script>
+        // DATA JADWAL DARI GAMBAR (Ciamis 2026)
+const schedule = {
+  "2026-02-18": { imsak: "04:24", buka: "18:13" },
+  "2026-02-19": { imsak: "04:24", buka: "18:13" },
+  "2026-02-20": { imsak: "04:24", buka: "18:13" },
+  "2026-02-21": { imsak: "04:25", buka: "18:12" },
+  "2026-02-22": { imsak: "04:25", buka: "18:12" },
+  "2026-02-23": { imsak: "04:25", buka: "18:12" },
+  "2026-02-24": { imsak: "04:25", buka: "18:11" },
+  "2026-02-25": { imsak: "04:25", buka: "18:11" },
+  "2026-02-26": { imsak: "04:25", buka: "18:10" },
+  "2026-02-27": { imsak: "04:26", buka: "18:10" },
+  "2026-02-28": { imsak: "04:26", buka: "18:10" },
+  "2026-03-01": { imsak: "04:26", buka: "18:09" },
+  "2026-03-02": { imsak: "04:26", buka: "18:09" },
+  "2026-03-03": { imsak: "04:26", buka: "18:09" },
+  "2026-03-04": { imsak: "04:26", buka: "18:08" },
+  "2026-03-05": { imsak: "04:26", buka: "18:08" },
+  "2026-03-06": { imsak: "04:26", buka: "18:07" },
+  "2026-03-07": { imsak: "04:26", buka: "18:07" },
+  "2026-03-08": { imsak: "04:26", buka: "18:06" },
+  "2026-03-09": { imsak: "04:26", buka: "18:06" },
+  "2026-03-10": { imsak: "04:26", buka: "18:05" },
+  "2026-03-11": { imsak: "04:26", buka: "18:05" },
+  "2026-03-12": { imsak: "04:26", buka: "18:05" },
+  "2026-03-13": { imsak: "04:26", buka: "18:04" },
+  "2026-03-14": { imsak: "04:26", buka: "18:04" },
+  "2026-03-15": { imsak: "04:26", buka: "18:03" },
+  "2026-03-16": { imsak: "04:26", buka: "18:03" },
+  "2026-03-17": { imsak: "04:26", buka: "18:02" },
+  "2026-03-18": { imsak: "04:26", buka: "18:02" },
+  "2026-03-19": { imsak: "04:26", buka: "18:01" }
+};
+
+
+function getNextDate(dateStr) {
+  const date = new Date(dateStr);
+  date.setDate(date.getDate() + 1);
+  return date.toISOString().split("T")[0];
+}
+
+function createDateTime(dateStr, timeStr) {
+  return new Date(`${dateStr}T${timeStr}:00`);
+}
+
+function formatTime(ms) {
+  const totalSeconds = Math.floor(ms / 1000);
+  const h = Math.floor(totalSeconds / 3600);
+  const m = Math.floor((totalSeconds % 3600) / 60);
+  const s = totalSeconds % 60;
+  return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+}
+
+function updateCountdown() {
+  const now = new Date();
+  const todayStr = now.getFullYear() + "-" +
+    String(now.getMonth() + 1).padStart(2, "0") + "-" +
+    String(now.getDate()).padStart(2, "0");
+
+  if (!schedule[todayStr]) {
+    document.getElementById("status").innerText =
+      "Di luar rentang jadwal Ramadan.";
+    return;
+  }
+
+  const imsakTime = createDateTime(todayStr, schedule[todayStr].imsak);
+  const bukaTime = createDateTime(todayStr, schedule[todayStr].buka);
+
+  let nextImsak = imsakTime;
+
+  if (now > bukaTime) {
+    const tomorrowStr = getNextDate(todayStr);
+    if (schedule[tomorrowStr]) {
+      nextImsak = createDateTime(tomorrowStr, schedule[tomorrowStr].imsak);
+    }
+  }
+
+  const imsakDiff = nextImsak - now;
+  const bukaDiff = bukaTime - now;
+
+  document.getElementById("imsakCountdown").innerText =
+    imsakDiff > 0 ? formatTime(imsakDiff) : "Sudah lewat";
+
+  document.getElementById("bukaCountdown").innerText =
+    bukaDiff > 0 ? formatTime(bukaDiff) : "Sudah buka!";
+
+  document.getElementById("status").innerText =
+    `Hari ini: Imsak ${schedule[todayStr].imsak} | Buka ${schedule[todayStr].buka}`;
+}
+
+setInterval(updateCountdown, 1000);
+updateCountdown();
+</script>
+
+</body>
+</html>
